@@ -1,0 +1,173 @@
+.mdx-table {
+    .table-card md-checkbox {
+        margin: 0;
+    }
+
+    .table-card {
+        padding: 0;
+    }
+
+    .table-card md-card-header {
+        padding-left: 0px;
+        padding-right: 24px;
+        vertical-align: middle;
+        cursor: default;
+        margin-bottom: 0px;
+    }
+
+    .table-card-margin {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+
+    .card-title {
+        position:absolute; 
+        top:26px; 
+        left:26px;
+    }
+
+    .additional-buttons {
+        display: inline-block;
+    }
+
+    img {
+        display: block;
+        margin: auto;
+        height: 64px;
+        width: 64px;
+        border-radius: 100%;
+    }
+
+    td.image {
+        width: 86px;
+    }
+
+    button.close-selected {
+        min-width: 10px;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .control-buttons, .selection-label {
+        margin-bottom: 10px;
+        margin-top: 10px;
+        margin-left: auto;
+    }
+
+    .selection-label {
+        margin-left: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .search md-input-container {
+        margin-top: 6px;
+    }
+
+    .control-buttons button {
+        height: 40px;
+    }
+
+    .search-separator {
+        width: 16px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+        margin-left: 10pX;
+        border-left-color: rgb(241, 241, 241);
+        border-left-style: solid;
+        border-left-width: 1px;
+    }
+
+    table {
+        cursor: pointer;
+        border: 1px solid #f1f1f1;
+        border-top-color: rgb(241, 241, 241);
+        border-top-style: solid;
+        border-top-width: 0px;
+        border-right-color: rgb(241, 241, 241);
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-color: rgb(241, 241, 241);
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-left-color: rgb(241, 241, 241);
+        border-left-style: solid;
+        border-left-width: 1px;
+        width: 100%;
+        border-spacing: 0px;
+    }
+
+    td, th {
+        vertical-align: middle;
+        text-align: left;
+        line-height: 1.45;
+        padding: 10px 10px 10px 10px;
+        border: 1px solid #f1f1f1;
+        border-top-color: rgb(241, 241, 241);
+        border-top-style: solid;
+        border-top-width: 1px;
+        border-right-color: rgb(241, 241, 241);
+        border-right-style: solid;
+        border-right-width: 1px;
+        border-bottom-color: rgb(241, 241, 241);
+        border-bottom-style: solid;    
+        border-left-color: rgb(241, 241, 241);
+        border-left-style: solid;
+        border-left-width: 0px;
+    }  
+
+    th:first-child, td:first-child {
+        width: 20px;
+    }
+
+    td {
+        border-bottom-width: 0px;
+    }  
+
+    th {
+        border-bottom-width: 1px;
+    }
+
+    thead>tr.progress>td, tfoot>tr.paginator>td {
+        padding: 0;
+        margin: 0;
+    }
+
+    tbody>tr {
+        transition: background-color 0.2s;
+    }
+
+    tbody>tr:nth-of-type(odd) {
+        background-color: #fcfcfc;
+    }
+
+    tbody>tr.selected {
+        background-color: #eee;
+    }
+
+    tbody>tr:hover {
+        background-color: #eee;
+    }
+
+    td.mdx-cell-boolentry {
+        text-align: center;
+    }
+
+    td.mdx-menu-cell {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .mdx-more-menu {
+        visibility: hidden;
+    }
+
+    .mdx-more-menu:hover {
+        background-color: rgba(0,0,0,.1);
+    }
+
+    tbody>tr:hover .mdx-more-menu {
+        visibility: visible;
+    }
+}
