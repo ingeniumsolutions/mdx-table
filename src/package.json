@@ -1,9 +1,9 @@
 {
-  "name": "teset",
+  "name": "mdx-table",
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/username/repo"
+    "url": "https://github.com/ingeniumsolutions/mdx-table"
   },
   "author": {
     "name": "Oleg Mishenkin",
@@ -14,12 +14,12 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/username/repo/issues"
+    "url": "https://github.com/ingeniumsolutions/mdx-table/issues"
   },
-  "main": "teset.umd.js",
-  "module": "teset.js",
-  "jsnext:main": "teset.js",
-  "typings": "teset.d.ts",
+  "main": "mdx-table.umd.js",
+  "module": "mdx-table.js",
+  "jsnext:main": "mdx-table.js",
+  "typings": "mdx-table.d.ts",
   "peerDependencies": {
     "@angular/core": "^4.0.0",
     "rxjs": "^5.1.0",

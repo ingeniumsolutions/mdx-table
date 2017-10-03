@@ -8,7 +8,7 @@ import {
   MdTooltipModule, MdMenuModule, MdButtonModule
 } from '@angular/material';
 import { MdxTableComponent } from './mdx-table/mdx-table.component';
-import { MdxNoDataComponent } from './mdx-nodata/mdx-nodata.component'
+import { MdxNoDataComponent } from './mdx-nodata/mdx-nodata.component';
 
 @NgModule({
   imports: [
