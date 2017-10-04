@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import DATA from './data';
 
 @Component({
-    selector: 'app-root',
-    template: '<b>Hello MDX_TABLE!</b>'
-    // templateUrl: './app-root.component.html',
-    // styleUrls: ['./app-root.component.scss']
+    selector: 'app',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss']
 })
-export class AppRootComponent implements OnInit {
+export class AppComponent implements OnInit {
     public loading: boolean;
     public entities: any[] = [];
     public tableConfig/*: TableConfig */= {
@@ -97,7 +97,7 @@ export class AppRootComponent implements OnInit {
         this.loading = true;
         setTimeout(() => {
             this.loading = false;
-            // this.entities = DATA;
+            this.entities = DATA;
         }, 5000);
     }
 }
