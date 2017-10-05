@@ -13,4 +13,4 @@ $ yard add mdx-table
 
 ## License
 
-MIT © [Oleg Mishenkin](mailto:gdecease@gmail.com)
+MIT © [IngeniumSolutions, Ltd.](mailto:support@ingeniumsolutions.ru)
