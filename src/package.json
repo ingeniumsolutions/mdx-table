@@ -1,6 +1,6 @@
 {
   "name": "mdx-table",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/ingeniumsolutions/mdx-table"
@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/ingeniumsolutions/mdx-table/issues"
   },
-  "main": "mdx-table.umd.js",
+  "main": "mdx-table.js",
   "module": "mdx-table.js",
   "jsnext:main": "mdx-table.js",
   "typings": "mdx-table.d.ts",

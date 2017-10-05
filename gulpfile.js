@@ -65,7 +65,7 @@ gulp.task('ngc', function () {
  * 5. Run rollup inside the /build folder to generate our Flat ES module and place the
  *    generated file into the /dist folder
  */
-gulp.task('rollup:fesm', function () {
+gulp.task('rollup:cjs', function () {
   return gulp.src(`${buildFolder}/**/*.js`)
   // transform the files here.
     .pipe(rollup({
@@ -89,7 +89,7 @@ gulp.task('rollup:fesm', function () {
 
       // Format of generated bundle
       // See "format" in https://rollupjs.org/#core-functionality
-      format: 'es'
+      format: 'cjs'
     }))
     .pipe(gulp.dest(distFolder));
 });
@@ -189,7 +189,7 @@ gulp.task('compile', function () {
     'copy:source',
     'inline-resources',
     'ngc',
-    'rollup:fesm',
+    'rollup:cjs',
     'rollup:umd',
     'copy:build',
     'copy:manifest',

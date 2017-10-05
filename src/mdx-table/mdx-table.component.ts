@@ -2,7 +2,7 @@ import { Component, ViewChild, OnInit, Input, OnChanges, OnDestroy, Output, Even
 import { Subscription } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MdPaginator, } from '@angular/material';
-import { TableConfig, BaseEntry, MultiEntry, Action } from './mdx-table.d';
+import { TableConfig, BaseEntry, MultiEntry, Action } from '../mdx-table.d';
 import { Md2DataTable } from 'md2';
 
 @Component({

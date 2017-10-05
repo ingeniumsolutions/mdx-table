@@ -25,6 +25,6 @@
   },
   "files": [
     "./index.ts",
-    "./mdx-table/mdx-table.d.ts"
+    "./mdx-table.d.ts"
   ]
 }
