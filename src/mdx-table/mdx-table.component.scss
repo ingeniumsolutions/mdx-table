@@ -79,6 +79,8 @@
     }
 
     table {
+        word-break:break-all;
+        user-select: none;
         cursor: pointer;
         border: 1px solid #f1f1f1;
         border-top-color: rgb(241, 241, 241);
@@ -93,7 +95,6 @@
         border-left-color: rgb(241, 241, 241);
         border-left-style: solid;
         border-left-width: 1px;
-        width: 100%;
         border-spacing: 0px;
     }
 
@@ -114,6 +115,18 @@
         border-left-color: rgb(241, 241, 241);
         border-left-style: solid;
         border-left-width: 0px;
+        .resizing-area {
+            cursor: ew-resize;
+            width: 12px;
+            height: 40px;
+            float: right;
+            margin-right: -16px;
+            margin-top: -10px;
+            margin-bottom: -10px;
+        }
+        .header-name {
+            display: inline;
+        }
     }  
 
     th:first-child, td:first-child {
