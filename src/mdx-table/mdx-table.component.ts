@@ -1,8 +1,7 @@
-import { Component, ViewChild, OnInit, Input, OnChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, OnInit, Input, OnChanges, OnDestroy, Output, EventEmitter, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FormControl } from '@angular/forms';
 import { MdPaginator, } from '@angular/material';
-import { TableConfig, BaseEntry, MultiEntry, Action } from '../mdx-table.d';
 import { Md2DataTable } from 'md2';
 
 @Component({
@@ -13,7 +12,7 @@ import { Md2DataTable } from 'md2';
 })
 export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;
-  @Input() config: TableConfig;
+  @Input() config: any;
   @Input() sortBy: string;
   @Input() enableMargin = true;
   @Input() tableName: string;
@@ -25,6 +24,23 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
 
   @ViewChild('md2') md2: Md2DataTable;
 
+  resizingColumn = -1;
+  startResizingPosition = 0;
+  @HostListener('document:mouseup', ['$event'])
+  mouseUp($event: MouseEvent) {
+    if (this.resizingColumn > -1) {
+      this.resizingColumn = -1;      
+    };
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  mouseMove($event: MouseEvent) {
+    if (this.resizingColumn > -1) {
+      let translation = $event.x - this.startResizingPosition;
+      this.updateColumnSize(translation);
+    };
+  }
+
   public activePage = 1;
   public pageSize: number;
   public pageSizes: number[];
@@ -33,6 +49,8 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   public searchControl = new FormControl('');
   public entities: any;
   public showLoading: boolean;
+  public columnsSizes: number[];
+  public columnsSizesBuffer: number[];
 
   _selectedForMenu: any;
   _loadingTimer: any;
@@ -49,9 +67,9 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
 
   public length = () => this.data.length;
 
-  public menuActions = () => (<Action[]> this.config.actions || [])
+  public menuActions = () => (this.config.actions || [])
     .concat(this.config.additionalActions || [])
-    .filter(a => !a.hideInMenu);
+    .filter((a: any) => !a.hideInMenu);
 
   public checkMenuButtonColumn = (i: number) =>
     i === (this.config.menuButtonColumn ? this.config.menuButtonColumn : this.config.columns.length - 1);
@@ -113,11 +131,20 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
     this._selectedForMenu = entity;
   }
 
+  public resizeDown($event: MouseEvent, index: number) {
+    $event.stopPropagation();
+    this.resizingColumn = index;
+    this.startResizingPosition = $event.x;
+    this.columnsSizesBuffer = this.columnsSizes.map(x => x);
+  }
+
   ngOnInit() {
     if (this.config.pagination) {
       this.pageSize = this.config.pagination.pageSize || 10;
       this.pageSizes = this.config.pagination.pageSizes || [10, 50, 100];
     }
+
+    this.columnsSizes = this.config.columns.map((x: any) => x.size || 100);
 
     this.freeSelected();
     this.updateEtities(this.data);
@@ -158,7 +185,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public rowClick(item: any, event: any) {
-    const primaryAction = (this.config.actions || []).find(a => !!a.primary);
+    const primaryAction = (this.config.actions || []).find((a: any) => !!a.primary);
     if (primaryAction) {
       primaryAction.function([item]);
     }
@@ -203,6 +230,13 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
     this.entities = data;
   }
 
+  updateColumnSize(translation: number) {
+    let newColumnSize = this.columnsSizesBuffer[this.resizingColumn] + translation;    
+    if (newColumnSize > 50) {
+      this.columnsSizes[this.resizingColumn] = newColumnSize;
+    };
+  }
+
   filterData(str: string) {
     const anyF = (x: any, y: any) => x || y;
     const find = (s: string) => s.toLowerCase().indexOf(str.toLowerCase()) > -1;
@@ -212,12 +246,12 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return this.data.filter((row: any) =>
-      this.config.columns.map(column => {
+      this.config.columns.map((column: any) => {
         const cell = (row[column.fieldName] || '').toString();
-        return (<{ [index: string]: () => boolean[] }> {
+        return (<{ [index: string]: () => boolean[] }>{
           ['BaseEntry']: () => [find(cell)],
           ['ArrayEntry']: () => cell.map((item: any) => find(item)),
-          ['MultiEntry']: () => (<MultiEntry> column).inner.map((item: BaseEntry) => cell[item.fieldName] && find(cell[item.fieldName])),
+          ['MultiEntry']: () => (column).inner.map((item: any) => cell[item.fieldName] && find(cell[item.fieldName])),
           ['BoolEntry']: () => [false]
         })[column.type]().reduce(anyF, false);
       }).reduce(anyF, false));
