@@ -1,92 +1,116 @@
-<md-menu #contextMenu="mdMenu" (close)="menuClosed()">
-    <button md-menu-item *ngFor="let action of menuActions()" [disabled]="!action.disabled ? !!selectedForMenu : action.disabled([selectedForMenu])"
+<mat-menu #contextMenu="mdMenu" (close)="menuClosed()">
+    <button mat-menu-item *ngFor="let action of menuActions()" [disabled]="!action.disabled ? !!selectedForMenu : action.disabled([selectedForMenu])"
         (click)="onContextMenuClick(action.function)"> {{action.name}} </button>
-</md-menu>
-<md-card class="table-card" [class.table-card-margin]="enableMargin" class="mdx-table">
-    <md-card-title *ngIf="tableName" class="card-title">{{tableName}}:{{loading}}</md-card-title>
-    <md-card-header>
+</mat-menu>
+<mat-card class="table-card" [class.table-card-margin]="enableMargin" class="mdx-table"
+    [ngStyle]="{ 'cursor': dragColumn !== null ? '-webkit-grabbing' : resizingColumn > -1 ? 'col-resize' : 'pointer' }">
+    <mat-card-title *ngIf="tableName" class="card-title">{{tableName}}:{{loading}}</mat-card-title>
+    <mat-card-header>
         <div class="selection-label" *ngIf="selected.length > 0">
-            <md-icon>list</md-icon>
+            <mat-icon>list</mat-icon>
             <span>{{ selected.length }}</span>
-            <button md-icon-button (click)="freeSelected()" class="close-selected">
-                <md-icon>close</md-icon>
+            <button mat-icon-button (click)="freeSelected()" class="close-selected">
+                <mat-icon>close</mat-icon>
             </button>
         </div>
         <div class="control-buttons">
-            <ng-container *ngIf="config.actions">
-                <button md-icon-button *ngFor="let action of config.actions" [mdTooltip]="action.name" mdTooltipPosition="left" [disabled]="!action.disabled ? selected.length === 0 : action.disabled(selected)"
+            <ng-container *ngIf="_config.actions">
+                <button mat-icon-button *ngFor="let action of _config.actions" [mdTooltip]="action.name" mdTooltipPosition="left" [disabled]="!action.disabled ? selected.length === 0 : action.disabled(selected)"
                     (click)="onBaseMenuClick(action.function)">
-                    <md-icon>{{ action.icon }}</md-icon>
+                    <mat-icon>{{ action.icon }}</mat-icon>
                 </button>
             </ng-container>
-            <div class="additional-buttons" *ngIf="config.additionalActions">
-                <button md-icon-button #menuButton [mdMenuTriggerFor]="menu">
-                    <md-icon>more_vert</md-icon>
+            <div class="additional-buttons" *ngIf="_config.additionalActions">
+                <button mat-icon-button #menuButton [mdMenuTriggerFor]="menu">
+                    <mat-icon>more_vert</mat-icon>
                 </button>
-                <md-menu #menu="mdMenu">
-                    <button *ngFor="let action of config.additionalActions" md-menu-item [disabled]="!action.disabled ? selected.length === 0 : action.disabled(selected)"
+                <mat-menu #menu="mdMenu">
+                    <button *ngFor="let action of _config.additionalActions" mat-menu-item [disabled]="!action.disabled ? selected.length === 0 : action.disabled(selected)"
                         (click)="onAdditionalMenuClick(action.function)">
                         <span>{{ action.name }}</span>
                     </button>
-                </md-menu>
+                </mat-menu>
             </div>
         </div>
         <div class="search-separator"></div>
         <div class="search">
-            <md-input-container>
+            <mat-form-field>
                 <input type="text" mdInput [formControl]="searchControl" />
-            </md-input-container>
-            <button md-icon-button *ngIf="searchControl.value.length === 0">
-                <md-icon>search</md-icon>
+            </mat-form-field>
+            <button mat-icon-button *ngIf="searchControl.value.length === 0">
+                <mat-icon>search</mat-icon>
             </button>
-            <button md-icon-button *ngIf="searchControl.value.length > 0" (click)="clearSearch()">
-                <md-icon>close</md-icon>
+            <button mat-icon-button *ngIf="searchControl.value.length > 0" (click)="clearSearch()">
+                <mat-icon>close</mat-icon>
             </button>
         </div>
-    </md-card-header>
-    <md-card-content>
+        <button *ngIf="_config.settingsActions" mat-icon-button [mdMenuTriggerFor]="settingsMenu"><mat-icon>settings</mat-icon></button>
+        <mat-menu #settingsMenu="mdMenu" [overlapTrigger]="true" class="menu">
+            <button *ngFor="let action of _config.settingsActions" mat-menu-item (click)="onSettingsMenuClick(action.function)">{{ action.name }}</button>
+            <button mat-menu-item routerLink="/fea-claims/settings/colors">Цвета состояний</button>
+        </mat-menu>
+    </mat-card-header>
+    <mat-card-content>
+        <table>
+            <thead>
+                <tr>
+                    <ng-container *ngFor="let column of _columns; let i = index">
+                        <th *ngIf="column.type !== 'ImageEntry' && !column.noSort" [ngStyle]="{ 'width.px': columnsSizes[i], 'opacity': dragColumn === column ? 0.4 : 0 }">
+                            <div class="header-content draggable-header-content" style="position: fixed; cursor: -webkit-grabbing" [ngStyle]="{ 'left.px': dragHeaderPosition.x, 'top.px': dragHeaderPosition.y }">
+                                <div class="header-name">{{ column.name }}</div>
+                                <div class="resizing-area"></div>
+                            </div>
+                        </th>
+                    </ng-container>
+                </tr>
+            </thead>
+        </table>
         <table class="table table-striped" [sortBy]="sortBy" (activePageChange)="freeSelected()" (sortByChange)="freeSelected()"
             (sortOrderChange)="freeSelected()" #md2="md2DataTable" [md2Data]="entities" [rowsPerPage]="pageSize" [activePage]="activePage">
             <thead>
                 <tr>
-                    <th class="md-cell md-checkbox-cell">
-                        <md-checkbox [disabled]="entities.length === 0" [checked]="allSelected" (change)="toggleSelectAllVisible()"></md-checkbox>
+                    <th class="mat-cell mat-checkbox-cell">
+                        <div class="header-content">
+                            <mat-checkbox [disabled]="entities.length === 0" [checked]="allSelected" (change)="toggleSelectAllVisible()"></mat-checkbox>
+                        </div>                        
                     </th>
-                    <ng-container *ngFor="let column of config.columns; let i = index">
+                    <ng-container *ngFor="let column of _columns; let i = index">
                         <th *ngIf="column.type === 'ImageEntry' || column.noSort">
                             <div>{{ column.name }}</div>
                         </th>
-                        <th *ngIf="column.type !== 'ImageEntry' && !column.noSort" [ngStyle]="{ 'width.px': columnsSizes[i] }">
-                            <div>
+                        <th *ngIf="column.type !== 'ImageEntry' && !column.noSort" [ngStyle]="{ 'width.px': columnsSizes[i], 'opacity': dragColumn === column ? 0.4 : 1 }">
+                            <div class="header-content" (mousedown)="dragDown($event, column)"
+                            [ngStyle]="{ 'cursor': dragColumn !== null ? '-webkit-grabbing' : '-webkit-grab' }">
                                 <div class="header-name">{{ column.name }}</div>
-                                <div class="resizing-area" (mousedown)="resizeDown($event, i)"></div>
+                                <div class="resizing-area" (mousedown)="resizeDown($event, i)" style="cursor: col-resize;"></div>
                             </div>
                         </th>
                     </ng-container>
                 </tr>
                 <tr *ngIf="showLoading" class="progress">
-                    <td [attr.colspan]="config.columns.length + 1">
-                        <md-progress-bar mode="indeterminate"></md-progress-bar>
+                    <td [attr.colspan]="_columns.length + 1">
+                        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
                     </td>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngIf="data.length === 0 && !loading">
-                    <td [attr.colspan]="config.columns.length + 1">
+                    <td [attr.colspan]="_columns.length + 1">
                         <mdx-nodata></mdx-nodata>
                     </td>
                 </tr>
 
                 <tr *ngFor="let entity of md2.data" [class.selected]="isSelected(entity)">
-                    <td class="md-cell md-checkbox-cell">
-                        <md-checkbox [checked]="isSelected(entity)" (change)="toggleRowSelection(entity, $event)"></md-checkbox>
+                    <td class="mat-cell mat-checkbox-cell">
+                        <mat-checkbox [checked]="isSelected(entity)" (change)="toggleRowSelection(entity, $event)"></mat-checkbox>
                     </td>
-                    <td *ngFor="let column of config.columns; let i = index" [class.mdx-menu-cell]="checkMenuButtonColumn(i)" [class.image]="column.type === 'ImageEntry'"
-                        (click)="rowClick(entity, $event)" [ngClass]="typeClass(column.type)">
+                    <td *ngFor="let column of _columns; let i = index" [class.mdx-menu-cell]="checkMenuButtonColumn(i)" [class.image]="column.type === 'ImageEntry'"
+                        [ngStyle]="{ 'width.px': columnsSizes[i], 'opacity': dragColumn === column ? 0.5 : 1 }" (click)="rowClick(entity, $event)"
+                        [ngClass]="typeClass(column.type)">
                         <div [ngStyle]="{ 'width.px': columnsSizes[i] }">
                             <div class="cell" [ngSwitch]="column.type">
                                 <span *ngSwitchCase="'BaseEntry'" [ngStyle]="column.style" [innerHtml]="entity[column.fieldName]"></span>
-                                <md-icon *ngSwitchCase="'BoolEntry'" [ngStyle]="column.style" [innerHtml]="checkBool(entity[column.fieldName])"></md-icon>
+                                <mat-icon *ngSwitchCase="'BoolEntry'" [ngStyle]="column.style" [innerHtml]="checkBool(entity[column.fieldName])"></mat-icon>
                                 <img *ngSwitchCase="'ImageEntry'" [src]="entity[column.fieldName]">
                                 <ng-container *ngSwitchCase="'MultiEntry'">
                                     <span *ngFor="let innerColumn of column.inner" [ngStyle]="innerColumn.style" [innerHtml]="entity[column.fieldName][innerColumn.fieldName]"></span>
@@ -94,24 +118,21 @@
                                 <ng-container *ngSwitchCase="'ArrayEntry'">
                                     <span *ngFor="let item of entity[column.fieldName]" [ngStyle]="column.style" [innerHtml]="item"></span>
                                 </ng-container>
-                            </div>
-
-                            <button *ngIf="checkMenuButtonColumn(i)" md-icon-button [mdMenuTriggerFor]="contextMenu" (click)="showMenu(entity,$event)"
-                                class="mdx-more-menu">
-                                <md-icon>more_vert</md-icon>
-                            </button>
+                                <button *ngIf="checkMenuButtonColumn(i)" mat-icon-button [mdMenuTriggerFor]="contextMenu" (click)="showMenu(entity,$event)" class="mdx-more-menu">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                            </div>                            
                         </div>
                     </td>
                 </tr>
             </tbody>
             <tfoot>
-                <tr class="paginator" *ngIf="entities.length > 0 && config.pagination">
-                    <td [attr.colspan]="config.columns.length + 1">
-                        <md-paginator [length]="entities.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizes" (page)="pageChanged($event)">
-                        </md-paginator>
+                <tr class="paginator" *ngIf="entities.length > 0 && _config.pagination">
+                    <td [attr.colspan]="_columns.length + 1">
+
                     </td>
                 </tr>
             </tfoot>
         </table>
-    </md-card-content>
-</md-card>
+    </mat-card-content>
+</mat-card>
