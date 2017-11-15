@@ -85,11 +85,10 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   _searchSubscription: Subscription;
 
   constructor(
-   // private paginator: MdPaginator
   ) {
     this.toggleSelectAllVisible = this.toggleSelectAllVisible.bind(this);
-
-  /*  this.paginator._intl.itemsPerPageLabel = 'Элементов на странице';
+/*
+    this.paginator._intl.itemsPerPageLabel = 'Элементов на странице';
     this.paginator._intl.getRangeLabel = (page, pageSize, length) => `${page * pageSize + 1} - ${(page + 1) * pageSize} из ${length}`;
     this.paginator._intl.nextPageLabel = 'Вперед';
     this.paginator._intl.previousPageLabel = 'Назад';*/
@@ -102,7 +101,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
     .filter((a: any) => !a.hideInMenu);
 
   public checkMenuButtonColumn = (i: number) =>
-    i === (this._config.menuButtonColumn ? this._config.menuButtonColumn : this._columns.length - 1);
+    i === (this._config.menuButtonColumn ? this._config.menuButtonColumn : null);
   public checkBool = (b: any) => !!b ? 'check_box' : 'check_box_outline_blank';
 
   public typeClass = (t: string) => `mdx-cell-${t.toLowerCase()}`;
@@ -217,7 +216,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    if (this._config.pagination) {
+    if (this._config && this._config.pagination) {
       this.pageSize = this._config.pagination.pageSize || 10;
       this.pageSizes = this._config.pagination.pageSizes || [10, 50, 100];
     }
@@ -244,7 +243,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
       this.updateLoadingBar(changes.loading.currentValue);
     }
 
-    if (changes.config && changes.config.currentValue.pagination) {
+    if (changes.config && changes.config.currentValue && changes.config.currentValue.pagination) {
       this.pageSize = changes.config.currentValue.pagination.pageSize || 10;
       this.pageSizes = changes.config.currentValue.pagination.pageSizes || [10, 50, 100];
     }

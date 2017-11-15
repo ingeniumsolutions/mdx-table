@@ -1,13 +1,14 @@
 
-    .table-card md-checkbox {
+    mat-checkbox {
         margin: 0;
+        line-height: 1.45em;
     }
 
     .table-card {
         padding: 0;
     }
 
-    .table-card md-card-header {
+    .table-card mat-card-header {
         padding-left: 0px;
         padding-right: 24px;
         vertical-align: middle;
@@ -59,7 +60,7 @@
         align-items: center;
     }
 
-    .search md-input-container {
+    .search mat-form-field {
         margin-top: 6px;
     }
 
@@ -186,4 +187,19 @@
 
     tbody>tr:hover .mdx-more-menu {
         visibility: visible;
+    }
+
+    .drag-headers {
+        border: 0px;
+        th {
+            border: 0px;
+        }
+    }
+
+    .table-wrapper {
+        overflow-x: scroll;
+    }
+
+    .settings-button {
+        margin-top: 15px;
     }
