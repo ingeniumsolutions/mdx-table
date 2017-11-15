@@ -1,18 +1,27 @@
 import { Component, ViewChild, OnInit, Input, OnChanges, OnDestroy, Output, EventEmitter, HostListener } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { FormControl } from '@angular/forms';
-import { MdPaginator, } from '@angular/material';
 import { Md2DataTable } from 'md2';
 
 @Component({
   selector: 'mdx-table',
   templateUrl: 'mdx-table.component.html',
   styleUrls: ['mdx-table.component.scss'],
-  providers: [MdPaginator]
+  providers: []
 })
 export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() data: any;
-  @Input() config: any;
+
+  _config: any;
+  _columns: any;
+  @Input() set config(x: any) {
+    if (x) {
+      this._columns = x.columns;
+      this._config = x;
+    } else {
+      this._config = x;
+    };
+  };
   @Input() sortBy: string;
   @Input() enableMargin = true;
   @Input() tableName: string;
@@ -21,23 +30,42 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   @Output() add = new EventEmitter();
   @Output() edit = new EventEmitter();
   @Output() delete = new EventEmitter();
+  @Output() changeSize = new EventEmitter();
+  @Output() changeOrder = new EventEmitter();
 
   @ViewChild('md2') md2: Md2DataTable;
 
   resizingColumn = -1;
-  startResizingPosition = 0;
+  dragColumn = null;
+  dragColumnPosition = { x: 0, y : 0 };
+  startResizingPosition = { x: 0, y : 0 };
+  dragHeaderPosition = { x: 0, y: 0 };
+  clientDragPosition = { x: 0, y: 0 };
   @HostListener('document:mouseup', ['$event'])
   mouseUp($event: MouseEvent) {
     if (this.resizingColumn > -1) {
-      this.resizingColumn = -1;      
+      this.resizingColumn = -1;  
+      this.onChangeSize();
+    };
+
+    if (this.dragColumn !== null) {
+      this.dragColumn = null;
+      this.dragHeaderPosition = { x: 0, y: 0 };
+      this.onChangeOrder();
     };
   }
 
   @HostListener('document:mousemove', ['$event'])
   mouseMove($event: MouseEvent) {
     if (this.resizingColumn > -1) {
-      let translation = $event.x - this.startResizingPosition;
+      let translation = $event.x - this.startResizingPosition.x;      
       this.updateColumnSize(translation);
+    };
+
+    if (this.dragColumn !== null) {
+      let translation = { x: $event.x - this.dragColumnPosition.x, y: $event.y - this.dragColumnPosition.y };      
+      this.dragHeaderPosition = { x: $event.x - this.clientDragPosition.x - 4, y: $event.y - this.clientDragPosition.y - 4 };
+      this.checkReorder(translation, $event);
     };
   }
 
@@ -56,23 +84,25 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   _loadingTimer: any;
   _searchSubscription: Subscription;
 
-  constructor(private paginator: MdPaginator) {
+  constructor(
+   // private paginator: MdPaginator
+  ) {
     this.toggleSelectAllVisible = this.toggleSelectAllVisible.bind(this);
 
-    this.paginator._intl.itemsPerPageLabel = 'Элементов на странице';
+  /*  this.paginator._intl.itemsPerPageLabel = 'Элементов на странице';
     this.paginator._intl.getRangeLabel = (page, pageSize, length) => `${page * pageSize + 1} - ${(page + 1) * pageSize} из ${length}`;
     this.paginator._intl.nextPageLabel = 'Вперед';
-    this.paginator._intl.previousPageLabel = 'Назад';
+    this.paginator._intl.previousPageLabel = 'Назад';*/
   }
 
   public length = () => this.data.length;
 
-  public menuActions = () => (this.config.actions || [])
-    .concat(this.config.additionalActions || [])
+  public menuActions = () => (this._config.actions || [])
+    .concat(this._config.additionalActions || [])
     .filter((a: any) => !a.hideInMenu);
 
   public checkMenuButtonColumn = (i: number) =>
-    i === (this.config.menuButtonColumn ? this.config.menuButtonColumn : this.config.columns.length - 1);
+    i === (this._config.menuButtonColumn ? this._config.menuButtonColumn : this._columns.length - 1);
   public checkBool = (b: any) => !!b ? 'check_box' : 'check_box_outline_blank';
 
   public typeClass = (t: string) => `mdx-cell-${t.toLowerCase()}`;
@@ -93,6 +123,10 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   public onAdditionalMenuClick(f: Function) {
     f(this.selected);
     this.freeSelected();
+  }
+
+  public onSettingsMenuClick(f: Function) {
+    f(this.selected);
   }
 
   public onBaseMenuClick(f: Function) {
@@ -134,17 +168,61 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   public resizeDown($event: MouseEvent, index: number) {
     $event.stopPropagation();
     this.resizingColumn = index;
-    this.startResizingPosition = $event.x;
+    this.startResizingPosition = { x: $event.x, y: $event.y };
     this.columnsSizesBuffer = this.columnsSizes.map(x => x);
   }
 
+  public dragDown($event: MouseEvent, column: any) {
+    $event.stopPropagation();
+    this.dragColumn = column;
+    this.dragColumnPosition = { x: $event.x, y: $event.y };    
+    this.clientDragPosition = { x: $event.offsetX, y: $event.offsetY };
+    this.dragHeaderPosition = { x: $event.x - this.clientDragPosition.x, y: $event.y - this.clientDragPosition.y };
+  }
+
+  public onChangeOrder() {
+    this.changeOrder.emit(this._columns.slice());
+  }
+
+  public onChangeSize() {
+    let columns = this._columns.slice();
+    columns.forEach((column: any, index: number) => {
+      column.size = this.columnsSizes[index];
+    });
+    this.changeSize.emit(columns);
+  }
+
+  checkReorder(translation: { x: number, y: number }, $event: MouseEvent) {
+    let columnIndex = this._columns.findIndex((x: any) => x === this.dragColumn);
+    if (columnIndex < this._columns.length && translation.x >= this.columnsSizes[columnIndex + 1] + 26) {
+      this.dragColumnPosition = { x: $event.x - translation.x + this.columnsSizes[columnIndex + 1] + 20, y: $event.y };
+      this.reorderColumns(columnIndex, columnIndex + 1, $event);
+    };
+
+    if (columnIndex > 0 && -translation.x >= this.columnsSizes[columnIndex - 1] + 16) {
+      this.dragColumnPosition = { x: $event.x - translation.x - this.columnsSizes[columnIndex - 1] - 20, y: $event.y };
+      this.reorderColumns(columnIndex, columnIndex - 1, $event);
+    };
+  }
+
+  reorderColumns(columnIndex1: number, columnIndex2: number, $event: MouseEvent) {
+    let tmpColumn = this._columns[columnIndex1];
+    let tmpSize = this.columnsSizes[columnIndex1];
+
+    this._columns[columnIndex1] = this._columns[columnIndex2];
+    this._columns[columnIndex2] = tmpColumn;
+
+    this.columnsSizes[columnIndex1] = this.columnsSizes[columnIndex2];
+    this.columnsSizes[columnIndex2] = tmpSize;
+  }
+
   ngOnInit() {
-    if (this.config.pagination) {
-      this.pageSize = this.config.pagination.pageSize || 10;
-      this.pageSizes = this.config.pagination.pageSizes || [10, 50, 100];
+    if (this._config.pagination) {
+      this.pageSize = this._config.pagination.pageSize || 10;
+      this.pageSizes = this._config.pagination.pageSizes || [10, 50, 100];
     }
 
-    this.columnsSizes = this.config.columns.map((x: any) => x.size || 100);
+    this.columnsSizes = this._columns.map((x: any) => x.size || 100);
 
     this.freeSelected();
     this.updateEtities(this.data);
@@ -185,7 +263,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public rowClick(item: any, event: any) {
-    const primaryAction = (this.config.actions || []).find((a: any) => !!a.primary);
+    const primaryAction = (this._config.actions || []).find((a: any) => !!a.primary);
     if (primaryAction) {
       primaryAction.function([item]);
     }
@@ -246,7 +324,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return this.data.filter((row: any) =>
-      this.config.columns.map((column: any) => {
+      this._columns.map((column: any) => {
         const cell = (row[column.fieldName] || '').toString();
         return (<{ [index: string]: () => boolean[] }>{
           ['BaseEntry']: () => [find(cell)],
