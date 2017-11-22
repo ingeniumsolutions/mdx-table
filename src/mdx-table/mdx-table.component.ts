@@ -1,12 +1,12 @@
-import { Component, ViewChild, OnInit, Input, OnChanges, OnDestroy, Output, EventEmitter, HostListener } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { FormControl } from '@angular/forms';
-import { Md2DataTable } from 'md2';
+import { Component, ViewChild, OnInit, Input, OnChanges, OnDestroy, Output, EventEmitter, HostListener } from "@angular/core";
+import { Subscription } from "rxjs";
+import { FormControl } from "@angular/forms";
+import { Md2DataTable } from "md2";
 
 @Component({
-  selector: 'mdx-table',
-  templateUrl: 'mdx-table.component.html',
-  styleUrls: ['mdx-table.component.scss'],
+  selector: "mdx-table",
+  templateUrl: "mdx-table.component.html",
+  styleUrls: ["mdx-table.component.scss"],
   providers: []
 })
 export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
@@ -33,18 +33,18 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   @Output() changeSize = new EventEmitter();
   @Output() changeOrder = new EventEmitter();
 
-  @ViewChild('md2') md2: Md2DataTable;
+  @ViewChild("md2") md2: Md2DataTable;
 
   resizingColumn = -1;
   dragColumn = null;
-  dragColumnPosition = { x: 0, y : 0 };
-  startResizingPosition = { x: 0, y : 0 };
+  dragColumnPosition = { x: 0, y: 0 };
+  startResizingPosition = { x: 0, y: 0 };
   dragHeaderPosition = { x: 0, y: 0 };
   clientDragPosition = { x: 0, y: 0 };
-  @HostListener('document:mouseup', ['$event'])
+  @HostListener("document:mouseup", ["$event"])
   mouseUp($event: MouseEvent) {
     if (this.resizingColumn > -1) {
-      this.resizingColumn = -1;  
+      this.resizingColumn = -1;
       this.onChangeSize();
     };
 
@@ -55,15 +55,15 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  @HostListener('document:mousemove', ['$event'])
+  @HostListener("document:mousemove", ["$event"])
   mouseMove($event: MouseEvent) {
     if (this.resizingColumn > -1) {
-      let translation = $event.x - this.startResizingPosition.x;      
+      let translation = $event.x - this.startResizingPosition.x;
       this.updateColumnSize(translation);
     };
 
     if (this.dragColumn !== null) {
-      let translation = { x: $event.x - this.dragColumnPosition.x, y: $event.y - this.dragColumnPosition.y };      
+      let translation = { x: $event.x - this.dragColumnPosition.x, y: $event.y - this.dragColumnPosition.y };
       this.dragHeaderPosition = { x: $event.x - this.clientDragPosition.x - 4, y: $event.y - this.clientDragPosition.y - 4 };
       this.checkReorder(translation, $event);
     };
@@ -74,7 +74,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   public pageSizes: number[];
   public selected: any[] = [];
   public allSelected = false;
-  public searchControl = new FormControl('');
+  public searchControl = new FormControl("");
   public entities: any;
   public showLoading: boolean;
   public columnsSizes: number[];
@@ -87,11 +87,11 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
   ) {
     this.toggleSelectAllVisible = this.toggleSelectAllVisible.bind(this);
-/*
-    this.paginator._intl.itemsPerPageLabel = 'Элементов на странице';
-    this.paginator._intl.getRangeLabel = (page, pageSize, length) => `${page * pageSize + 1} - ${(page + 1) * pageSize} из ${length}`;
-    this.paginator._intl.nextPageLabel = 'Вперед';
-    this.paginator._intl.previousPageLabel = 'Назад';*/
+    /*
+        this.paginator._intl.itemsPerPageLabel = "Элементов на странице";
+        this.paginator._intl.getRangeLabel = (page, pageSize, length) => `${page * pageSize + 1} - ${(page + 1) * pageSize} из ${length}`;
+        this.paginator._intl.nextPageLabel = "Вперед";
+        this.paginator._intl.previousPageLabel = "Назад";*/
   }
 
   public length = () => this.data.length;
@@ -102,7 +102,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
 
   public checkMenuButtonColumn = (i: number) =>
     i === (this._config.menuButtonColumn ? this._config.menuButtonColumn : null);
-  public checkBool = (b: any) => !!b ? 'check_box' : 'check_box_outline_blank';
+  public checkBool = (b: any) => !!b ? "check_box" : "check_box_outline_blank";
 
   public typeClass = (t: string) => `mdx-cell-${t.toLowerCase()}`;
 
@@ -174,7 +174,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   public dragDown($event: MouseEvent, column: any) {
     $event.stopPropagation();
     this.dragColumn = column;
-    this.dragColumnPosition = { x: $event.x, y: $event.y };    
+    this.dragColumnPosition = { x: $event.x, y: $event.y };
     this.clientDragPosition = { x: $event.offsetX, y: $event.offsetY };
     this.dragHeaderPosition = { x: $event.x - this.clientDragPosition.x, y: $event.y - this.clientDragPosition.y };
   }
@@ -254,7 +254,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public isString(item: any) {
-    return typeof item === 'string';
+    return typeof item === "string";
   }
 
   public isSelected(item: any) {
@@ -280,7 +280,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public clearSearch() {
-    this.searchControl.setValue('');
+    this.searchControl.setValue("");
   }
 
   public pageChanged(pageEvent: { pageIndex: number, pageSize: number, length: number }) {
@@ -308,7 +308,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateColumnSize(translation: number) {
-    let newColumnSize = this.columnsSizesBuffer[this.resizingColumn] + translation;    
+    let newColumnSize = this.columnsSizesBuffer[this.resizingColumn] + translation;
     if (newColumnSize > 50) {
       this.columnsSizes[this.resizingColumn] = newColumnSize;
     };
@@ -324,12 +324,12 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
 
     return this.data.filter((row: any) =>
       this._columns.map((column: any) => {
-        const cell = (row[column.fieldName] || '').toString();
-        return (<{ [index: string]: () => boolean[] }>{
-          ['BaseEntry']: () => [find(cell)],
-          ['ArrayEntry']: () => cell.map((item: any) => find(item)),
-          ['MultiEntry']: () => (column).inner.map((item: any) => cell[item.fieldName] && find(cell[item.fieldName])),
-          ['BoolEntry']: () => [false]
+        const cell = (row[column.fieldName] || "").toString();
+        return (<{ [index: string]: () => boolean[] }> {
+          ["BaseEntry"]: () => [find(cell)],
+          ["ArrayEntry"]: () => cell.map((item: any) => find(item)),
+          ["MultiEntry"]: () => (column).inner.map((item: any) => cell[item.fieldName] && find(cell[item.fieldName])),
+          ["BoolEntry"]: () => [false]
         })[column.type]().reduce(anyF, false);
       }).reduce(anyF, false));
   }

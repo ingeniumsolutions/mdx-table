@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { Md2DataTableModule } from 'md2';
-import { MdxTableComponent } from './mdx-table/mdx-table.component';
-import { MdxNoDataComponent } from './mdx-nodata/mdx-nodata.component';
+import { NgModule } from "@angular/core";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { Md2DataTableModule } from "md2";
+import { MdxTableComponent } from "./mdx-table/mdx-table.component";
+import { MdxNoDataComponent } from "./mdx-nodata/mdx-nodata.component";
 
 import { MatInputModule } from "@angular/material/input";
 import { MatPaginatorModule } from "@angular/material/paginator";

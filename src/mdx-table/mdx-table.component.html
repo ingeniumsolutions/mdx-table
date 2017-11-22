@@ -43,6 +43,7 @@
                 <mat-icon>close</mat-icon>
             </button>
         </div>
+        <ng-content></ng-content>
         <button class="settings-button" *ngIf="_config.settingsActions" mat-icon-button [matMenuTriggerFor]="settingsMenu">
             <mat-icon>settings</mat-icon>
         </button>
@@ -55,8 +56,8 @@
             <thead>
                 <tr>
                     <ng-container *ngFor="let column of _columns; let i = index">
-                        <th *ngIf="column.type !== 'ImageEntry' && !column.noSort" [ngStyle]="{ 'width.px': columnsSizes[i], 'opacity': dragColumn === column ? 0.4 : 0 }">
-                            <div class="header-content draggable-header-content" style="position: fixed; cursor: -webkit-grabbing" [ngStyle]="{ 'left.px': dragHeaderPosition.x, 'top.px': dragHeaderPosition.y }">
+                        <th *ngIf="column.type !== 'ImageEntry' && !column.noSort" [ngStyle]="{ 'opacity': dragColumn === column ? 0.4 : 0 }">
+                            <div class="header-content draggable-header-content" style="position: fixed; cursor: -webkit-grabbing" [ngStyle]="{ 'width.px': columnsSizes[i], 'left.px': dragHeaderPosition.x, 'top.px': dragHeaderPosition.y }">
                                 <div class="header-name">{{ column.name }}</div>
                                 <div class="resizing-area"></div>
                             </div>
@@ -100,7 +101,7 @@
                         </td>
                     </tr>
 
-                    <tr *ngFor="let entity of md2.data" [class.selected]="isSelected(entity)">
+                    <tr *ngFor="let entity of md2.data" [class.selected]="isSelected(entity)" [ngStyle]="entity.style">
                         <td class="mat-cell mat-checkbox-cell">
                             <mat-checkbox [checked]="isSelected(entity)" (change)="toggleRowSelection(entity, $event)"></mat-checkbox>
                         </td>
