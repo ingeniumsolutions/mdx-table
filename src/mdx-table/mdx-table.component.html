@@ -125,15 +125,11 @@
                         </td>
                     </tr>
                 </tbody>
-                <tfoot>
-                    <tr class="paginator" *ngIf="entities.length > 0 &&  _config.pagination">
-                        <td [attr.colspan]="_config.columns.length + 1">
-                            <mat-paginator [length]="entities.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizes" (page)="pageChanged($event)">
-                            </mat-paginator>
-                        </td>
-                    </tr>
-                </tfoot>
             </table>
         </div>
     </mat-card-content>
+    <mat-card-footer>
+        <mat-paginator [length]="entities.length" [pageSize]="pageSize" [pageSizeOptions]="pageSizes" (page)="pageChanged($event)">
+        </mat-paginator>
+    </mat-card-footer>
 </mat-card>

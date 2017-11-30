@@ -4,8 +4,22 @@
         line-height: 1.45em;
     }
 
+    .mat-checkbox-cell {
+        margin: 0;
+        line-height: 1.45em;
+    }
+
+
     .table-card {
         padding: 0;
+    }
+
+    mat-card {
+        height: calc(100% - 130px);
+    }
+
+    mat-card-content {
+        height: calc(100% - 130px);
     }
 
     .table-card mat-card-header {
@@ -198,6 +212,7 @@
 
     .table-wrapper {
         overflow-x: scroll;
+        height: 100%;
     }
 
     .settings-button {
@@ -206,4 +221,5 @@
     
     mat-paginator {
         float: left;
+        margin-left: 24px;
     }
