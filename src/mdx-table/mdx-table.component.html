@@ -2,7 +2,7 @@
     <button mat-menu-item *ngFor="let action of menuActions()" [disabled]="!action.disabled ? !!selectedForMenu : action.disabled([selectedForMenu])"
         (click)="onContextMenuClick(action.function)"> {{action.name}} </button>
 </mat-menu>
-<mat-card class="table-card" [class.table-card-margin]="enableMargin" class="mdx-table" [ngStyle]="{ 'cursor': dragColumn !== null ? '-webkit-grabbing' : resizingColumn > -1 ? 'col-resize' : 'pointer' }">
+<mat-card class="table-card" [class.table-card-margin]="enableMargin" class="mdx-table">
     <mat-card-title *ngIf="tableName" class="card-title">{{tableName}}:{{loading}}</mat-card-title>
     <mat-card-header>
         <div class="selection-label" *ngIf="selected.length > 0">
@@ -52,7 +52,10 @@
         </mat-menu>
     </mat-card-header>
     <mat-card-content>
-        <table class="drag-headers">
+        <div *ngIf="data.length === 0 && !loading">
+            <mdx-nodata></mdx-nodata>
+        </div>
+        <table class="drag-headers" *ngIf="!(data.length === 0 && !loading)">
             <thead>
                 <tr>
                     <ng-container *ngFor="let column of _columns; let i = index">
@@ -66,8 +69,8 @@
                 </tr>
             </thead>
         </table>
-        <div class="table-wrapper">
-            <table class="table table-striped" [sortBy]="sortBy" (activePageChange)="freeSelected()" (sortByChange)="freeSelected()"
+        <div class="table-wrapper" *ngIf="!(data.length === 0 && !loading)">
+            <table class="table table-striped" [sortBy]="sortBy" (activePageChange)="freeSelected()" (sortByChange)="freeSelected()" [ngStyle]="{ 'cursor': dragColumn !== null ? '-webkit-grabbing' : resizingColumn > -1 ? 'col-resize' : 'pointer' }"
                 (sortOrderChange)="freeSelected()" #md2="md2DataTable" [md2Data]="entities" [rowsPerPage]="pageSize" [activePage]="activePage">
                 <thead>
                     <tr>
@@ -83,7 +86,7 @@
                             <th *ngIf="column.type !== 'ImageEntry' && !column.noSort" [ngStyle]="{ 'width.px': columnsSizes[i], 'opacity': dragColumn === column ? 0.4 : 1 }">
                                 <div class="header-content" (mousedown)="dragDown($event, column)" [ngStyle]="{ 'cursor': dragColumn !== null ? '-webkit-grabbing' : '-webkit-grab' }">
                                     <div class="header-name">{{ column.name }}</div>
-                                    <div class="resizing-area" (mousedown)="resizeDown($event, i)" style="cursor: col-resize;"></div>
+                                    <div class="resizing-area" (mousedown)="resizeDown($event, i)" [ngStyle]="{ 'cursor': dragColumn !== null ? '-webkit-grabbing' : 'col-resize' }"></div>
                                 </div>
                             </th>
                         </ng-container>
@@ -95,12 +98,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngIf="data.length === 0 && !loading">
-                        <td [attr.colspan]="_columns.length + 1">
-                            <mdx-nodata></mdx-nodata>
-                        </td>
-                    </tr>
-
                     <tr *ngFor="let entity of md2.data" [class.selected]="isSelected(entity)" [ngStyle]="entity.style">
                         <td class="mat-cell mat-checkbox-cell">
                             <mat-checkbox [checked]="isSelected(entity)" (change)="toggleRowSelection(entity, $event)"></mat-checkbox>

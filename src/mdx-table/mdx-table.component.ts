@@ -218,7 +218,7 @@ export class MdxTableComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     if (this._config && this._config.pagination) {
       this.pageSize = this._config.pagination.pageSize || 10;
-      this.pageSizes = this._config.pagination.pageSizes || [10, 50, 100];
+      this.pageSizes = this._config.pagination.pageSizes || [10, 20, 30];
     }
 
     this.columnsSizes = this._columns.map((x: any) => x.size || 100);

@@ -159,7 +159,7 @@
     }
 
     tbody>tr.selected {
-        background-color: #eee;
+        background-color: rgb(54, 179, 164) !important;
     }
 
     tbody>tr:hover {
@@ -202,4 +202,8 @@
 
     .settings-button {
         margin-top: 15px;
+    }
+    
+    mat-paginator {
+        float: left;
     }
